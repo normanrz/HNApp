@@ -20,6 +20,7 @@ var HNApp = React.createClass({
       <NavigatorIOS
         ref='nav'
         style={styles.container}
+        translucent={true}
         initialRoute={{
           component: TopStoriesListView,
           title: 'Top Stories',
@@ -63,7 +64,6 @@ var TopStoriesListView = React.createClass({
         renderRow={this.renderRow}
         style={styles.container}
         loadData={this.loadStories}
-        // refreshDescription='Refreshing articles'
       />
     );
   },
