@@ -9,10 +9,12 @@ var {
   ListView,
   TouchableHighlight,
   NavigatorIOS,
+  AppStateIOS,
 } = React;
 var SafariView = require('react-native-safari-view');
 var RefreshableListView = require('react-native-refreshable-listview')
 
+var RELOAD_THRESHOLD = 1000 * 60 * 10; // 10min
 
 var HNApp = React.createClass({
   render() {
@@ -35,13 +37,28 @@ var HNApp = React.createClass({
 var TopStoriesListView = React.createClass({
 
   getInitialState() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
     return {
       dataSource: ds.cloneWithRows([]),
+      lastLoad: 0,
     };
   },
 
+  componentDidMount: function() {
+    AppStateIOS.addEventListener('change', this.handleAppStateChange);
+  },
+  componentWillUnmount: function() {
+    AppStateIOS.removeEventListener('change', this.handleAppStateChange);
+  },
+  handleAppStateChange: function(currentAppState) {
+    if (currentAppState == 'active' && 
+      Date.now() >= this.state.lastLoad + RELOAD_THRESHOLD) {
+      this.loadStories();
+    }
+  },
+
   loadStories() {
+    this.setState({ lastLoad: Date.now() });
     fetch('http://node-hnapi-eus.azurewebsites.net/news')
       .then(function (res) {
         return res.json();
