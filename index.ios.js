@@ -12,7 +12,6 @@ var {
   AppStateIOS,
 } = React;
 var SafariView = require('react-native-safari-view');
-var RefreshableListView = require('react-native-refreshable-listview')
 
 var RELOAD_THRESHOLD = 1000 * 60 * 10; // 10min
 
@@ -59,7 +58,7 @@ var TopStoriesListView = React.createClass({
 
   loadStories() {
     this.setState({ lastLoad: Date.now() });
-    fetch('http://node-hnapi-eus.azurewebsites.net/news')
+    return fetch('http://node-hnapi-eus.azurewebsites.net/news')
       .then(function (res) {
         return res.json();
       })
@@ -76,11 +75,11 @@ var TopStoriesListView = React.createClass({
 
   render() {
     return (
-      <RefreshableListView
+      <ListView
         dataSource={this.state.dataSource}
         renderRow={this.renderRow}
         style={styles.container}
-        loadData={this.loadStories}
+        onRefreshStart={(endRefreshing) => { this.loadStories().then(endRefreshing); }}
       />
     );
   },
