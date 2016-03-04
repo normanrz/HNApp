@@ -48,14 +48,26 @@ class TopStoriesListView extends Component {
     }
   }
 
-  handlePressRow(rowData) {
+  openURL(url) {
     if (Platform.OS == 'ios') {
       SafariView.show({
-        url: rowData.url,
+        url: url,
       });
     } else {
-      Linking.openURL(rowData.url);
+      Linking.openURL(url);
     }
+  }
+
+  handlePressRow(rowData) {
+    let url = rowData.url;
+    if (url == null) {
+      url = `https://news.ycombinator.com/item?id=${rowData.id}`;
+    }
+    this.openURL(url);
+  }
+
+  handlePressRowTitle(rowData, event) {
+    this.openURL(`https://news.ycombinator.com/item?id=${rowData.id}`);
   }
 
   loadStories() {
@@ -84,7 +96,9 @@ class TopStoriesListView extends Component {
           <Text style={styles.rowStoryTitle}>{rowData.title}</Text>
           <Text style={styles.rowStoryDomain}>{rowData.domain}</Text>
           <Text style={styles.rowStoryMeta}>{rowData.points + ' points by ' + rowData.user}</Text>
-          <Text style={styles.rowStoryMeta}>{rowData.time_ago + ' · ' + rowData.comments_count + ' comments'}</Text>
+          <Text style={styles.rowStoryMeta} onPress={this.handlePressRowTitle.bind(this, rowData)}>
+            {rowData.time_ago + ' · ' + rowData.comments_count + ' comments'}
+          </Text>
         </View>
       </View>
     </TouchableHighlight>;
