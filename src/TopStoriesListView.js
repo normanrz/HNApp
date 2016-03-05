@@ -60,13 +60,13 @@ class TopStoriesListView extends Component {
 
   handlePressRow(rowData) {
     let url = rowData.url;
-    if (url == null) {
+    if (url == null || !url.match(/^https?:\/\//)) {
       url = `https://news.ycombinator.com/item?id=${rowData.id}`;
     }
     this.openURL(url);
   }
 
-  handlePressRowTitle(rowData, event) {
+  handlePressRowTitle(rowData) {
     this.openURL(`https://news.ycombinator.com/item?id=${rowData.id}`);
   }
 
